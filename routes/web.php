@@ -18,3 +18,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('connect', 'ShopifyController@connect');
+
+Route::get('shopify/oauth/authorize', 'ShopifyController@getResponse');
+Route::get('shopify/products/{id?}', 'ShopifyController@getProduct');
+Route::get('shopify/orders/{id?}', 'ShopifyController@getOrders');

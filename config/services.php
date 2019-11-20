@@ -30,4 +30,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'shopify' => [
+        'client_id' => env('SHOPIFY_KEY'),
+        'client_secret' => env('SHOPIFY_SECRET'),
+        'redirect' => env('SHOPIFY_REDIRECT'),
+    ],
 ];
