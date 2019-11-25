@@ -15,12 +15,14 @@ class ShopifyController extends Controller
 {
     public $scopes;
     public $shop;
+    public $appUrl;
 
     public function __construct()
     {
         $this->scopes = ['read_products', 'read_orders', 'write_products', 'read_customers', 'write_customers'];
         $this->shop = env('SHOPIFY_SHOP');
         $this->client = new Client();
+        $this->appUrl = env('APP_URL');
     }
 
     public function connect(Request $request)
@@ -132,5 +134,33 @@ class ShopifyController extends Controller
 
             \Log::info("Order successfully $status!");
         }
+    }
+
+    public function createWebhook()
+    {
+        $accessToken =  $this->getAccessToken();
+
+        try {
+            $request = $this->client->post("https://$this->shop/admin/api/2019-07/webhook.json", [
+                'headers' => [
+                    'Accept'                 => 'application/json',
+                    'X-Shopify-Access-Token' => $accessToken,
+                ],
+                'form_params' => [
+                    'webhook' => [
+                        'topic'   => 'orders/create',
+                        'address' => $this->appUrl.'/api/webhook/orders',
+                        'format'  => 'json',
+                    ]
+                ],
+            ]);
+            $response = $request->getBody();
+        } catch(\Exception $e){
+            dd($e);
+            $errorShop = $e->getMessage();
+            return view('result', ['message' => ['type' => 'danger', 'text' => $errorShop]]);
+        }
+        $webhook = json_decode($response->getContents(), true);
+        return view('result', ['data' => $webhook]);
     }
 }
