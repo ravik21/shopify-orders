@@ -165,6 +165,34 @@ class ShopifyController extends Controller
         return view('result', ['data' => $webhook]);
     }
 
+    public function createWebhookForcarts()
+    {
+        $accessToken =  $this->getAccessToken();
+        $shop        = Shop::first();
+
+        try {
+            $request = $this->client->post("https://$this->shop/admin/api/2019-10/webhooks.json", [
+                'headers' => [
+                    'X-Shopify-Access-Token' => $accessToken,
+                  ],
+                'form_params' => [
+                  'webhook' => [
+                      'topic'   => 'carts/create',
+                      'address' => $this->appUrl."api/$shop->id/carts/create",
+                      'format'  => 'json',
+                  ]
+                ]
+            ]);
+
+            $response = $request->getBody();
+        } catch(\Exception $e) {
+            $errorShop = $e->getMessage();
+            return view('result', ['message' => ['type' => 'danger', 'text' => $errorShop]]);
+        }
+        $webhook = json_decode($response->getContents(), true);
+        return view('result', ['data' => $webhook]);
+    }
+
     public function getWebhooks()
     {
         $accessToken =  $this->getAccessToken();
@@ -186,7 +214,13 @@ class ShopifyController extends Controller
         return view('result', ['data' => $webhooks]);
     }
 
-    public function getWebhookOrders(Request $request, $shopId)
+    public function shopCartCreate(Request $request, $shopId)
+    {
+        $meta = $request->all();
+        \Log::info($meta);
+    }
+
+    public function webhookOrders(Request $request, $shopId)
     {
         $meta = $request->all();
         \Log::info($meta);

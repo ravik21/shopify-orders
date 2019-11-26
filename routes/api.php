@@ -14,3 +14,5 @@ use Illuminate\Http\Request;
 */
 
 Route::post('orders/webhook/{status?}', 'ShopifyController@orderWebhook');
+Route::post('{shopId}/carts/create', 'ShopifyController@shopCartCreate');
+Route::post('{shopId}/webhook/orders', 'ShopifyController@webhookOrders');

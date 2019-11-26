@@ -10,7 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -25,7 +24,6 @@ Route::prefix('shopify')->group(function () {
     Route::get('products/{id?}', 'ShopifyController@getProduct');
     Route::get('orders/{id?}', 'ShopifyController@getOrders');
     Route::get('webhook/create', 'ShopifyController@createWebhook');
+    Route::get('webhook/carts/create', 'ShopifyController@createWebhookForcarts');
     Route::get('webhooks', 'ShopifyController@getWebhooks');
 });
-
-Route::post('api/{shopId}/webhook/orders', 'ShopifyController@getWebhookOrders');
