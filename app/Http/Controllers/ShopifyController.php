@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Socialite;
 use GuzzleHttp\Client;
 
+use App\Models\Shop;
 
 class ShopifyController extends Controller
 {
@@ -139,6 +140,7 @@ class ShopifyController extends Controller
     public function createWebhook()
     {
         $accessToken =  $this->getAccessToken();
+        $shop        = Shop::first();
 
         try {
             $request = $this->client->post("https://$this->shop/admin/api/2019-10/webhooks.json", [
@@ -147,8 +149,8 @@ class ShopifyController extends Controller
                   ],
                 'form_params' => [
                   'webhook' => [
-                      'topic'   => 'carts/create',
-                      'address' => $this->appUrl.'/api/carts/create',
+                      'topic'   => 'orders/create',
+                      'address' => $this->appUrl."api/$shop->id/webhook/orders",
                       'format'  => 'json',
                   ]
                 ]
@@ -182,5 +184,11 @@ class ShopifyController extends Controller
 
         $webhooks = json_decode($response->getContents(), true);
         return view('result', ['data' => $webhooks]);
+    }
+
+    public function getWebhookOrders(Request $request, $shopId)
+    {
+        $meta = $request->all();
+        \Log::info($meta);
     }
 }

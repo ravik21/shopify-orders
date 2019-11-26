@@ -20,8 +20,12 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('connect', 'ShopifyController@connect');
 
-Route::get('shopify/oauth/authorize', 'ShopifyController@getResponse');
-Route::get('shopify/products/{id?}', 'ShopifyController@getProduct');
-Route::get('shopify/orders/{id?}', 'ShopifyController@getOrders');
-Route::get('shopify/webhook/create', 'ShopifyController@createWebhook');
-Route::get('shopify/webhooks', 'ShopifyController@getWebhooks');
+Route::prefix('shopify')->group(function () {
+    Route::get('oauth/authorize', 'ShopifyController@getResponse');
+    Route::get('products/{id?}', 'ShopifyController@getProduct');
+    Route::get('orders/{id?}', 'ShopifyController@getOrders');
+    Route::get('webhook/create', 'ShopifyController@createWebhook');
+    Route::get('webhooks', 'ShopifyController@getWebhooks');
+});
+
+Route::post('api/{shopId}/webhook/orders', 'ShopifyController@getWebhookOrders');
