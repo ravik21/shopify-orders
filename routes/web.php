@@ -24,3 +24,4 @@ Route::get('shopify/oauth/authorize', 'ShopifyController@getResponse');
 Route::get('shopify/products/{id?}', 'ShopifyController@getProduct');
 Route::get('shopify/orders/{id?}', 'ShopifyController@getOrders');
 Route::get('shopify/webhook/create', 'ShopifyController@createWebhook');
+Route::get('shopify/webhooks', 'ShopifyController@getWebhooks');

@@ -141,26 +141,46 @@ class ShopifyController extends Controller
         $accessToken =  $this->getAccessToken();
 
         try {
-            $request = $this->client->post("https://$this->shop/admin/api/2019-07/webhook.json", [
+            $request = $this->client->post("https://$this->shop/admin/api/2019-10/webhooks.json", [
                 'headers' => [
-                    'Accept'                 => 'application/json',
                     'X-Shopify-Access-Token' => $accessToken,
-                ],
+                  ],
                 'form_params' => [
-                    'webhook' => [
-                        'topic'   => 'orders/create',
-                        'address' => $this->appUrl.'/api/webhook/orders',
-                        'format'  => 'json',
-                    ]
-                ],
+                  'webhook' => [
+                      'topic'   => 'carts/create',
+                      'address' => $this->appUrl.'/api/carts/create',
+                      'format'  => 'json',
+                  ]
+                ]
             ]);
+
             $response = $request->getBody();
-        } catch(\Exception $e){
-            dd($e);
+        } catch(\Exception $e) {
             $errorShop = $e->getMessage();
             return view('result', ['message' => ['type' => 'danger', 'text' => $errorShop]]);
         }
         $webhook = json_decode($response->getContents(), true);
         return view('result', ['data' => $webhook]);
+    }
+
+    public function getWebhooks()
+    {
+        $accessToken =  $this->getAccessToken();
+
+        try {
+          $request = $this->client->get("https://$this->shop/admin/api/2019-10/webhooks.json", [
+              'headers' => [
+                  'X-Shopify-Access-Token' => $accessToken,
+              ]
+          ]);
+
+          $response = $request->getBody();
+        } catch(\Exception $e) {
+            $errorShop = $e->getMessage();
+            return view('result', ['message' => ['type' => 'danger', 'text' => $errorShop]]);
+        }
+
+        $webhooks = json_decode($response->getContents(), true);
+        return view('result', ['data' => $webhooks]);
     }
 }
